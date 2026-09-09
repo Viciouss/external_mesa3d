@@ -170,14 +170,20 @@ get_native_buffer_fds(struct ANativeWindowBuffer *buf, int fds[3])
     * Various gralloc implementations exist, but the dma-buf fd tends
     * to be first. Access it directly to avoid a dependency on specific
     * gralloc versions.
+    *
+    * Some implementations append fds that are not planes - cros_gralloc
+    * (minigbm) adds one for its IMapper 4.0 metadata reserved region - so
+    * numFds can exceed both the plane count and the size of fds[].
     */
-   for (int i = 0; i < handle->numFds; i++)
+   int num_fds = handle->numFds > 3 ? 3 : handle->numFds;
+
+   for (int i = 0; i < num_fds; i++)
       fds[i] = handle->data[i];
 
 #ifdef NUM_FDS_HACK
    return 1;
 #else
-   return handle->numFds;
+   return num_fds;
 #endif
 }
 
@@ -340,9 +346,13 @@ droid_create_image_from_prime_fds(_EGLDisplay *disp,
    /*
     * Non-YUV formats could *also* have multiple planes, such as ancillary
     * color compression state buffer, but the rest of the code isn't ready
-    * yet to deal with modifiers:
+    * yet to deal with modifiers.
+    *
+    * A non-YUV format has exactly one plane, and any further fds the gralloc
+    * handle carries are not planes (see get_native_buffer_fds), so use only
+    * the first.
     */
-   assert(num_fds == 1);
+   num_fds = 1;
 
    const int fourcc = get_fourcc(buf->format);
    if (fourcc == -1) {
