@@ -1,0 +1,88 @@
+// Mesa itself is built through android/Android.mk (meson). This file only
+// provides the Soong modules that AOSP's external/mesa3d defines and that
+// emulator projects in the tree (device/generic/goldfish,
+// device/generic/goldfish-opengl, hardware/google/gfxstream,
+// device/google/cuttlefish) reference. They are never built for real devices,
+// so they are empty placeholders with the same module types and variants as
+// in AOSP.
+
+package {
+    default_applicable_licenses: ["external_mesa3d_license"],
+}
+
+license {
+    name: "external_mesa3d_license",
+    visibility: [":__subpackages__"],
+    license_kinds: ["SPDX-license-identifier-MIT"],
+    license_text: ["docs/license.rst"],
+}
+
+cc_defaults {
+    name: "mesa_platform_virtgpu_defaults",
+    static_libs: ["mesa_platform_virtgpu"],
+}
+
+cc_library_static {
+    name: "mesa_util",
+    vendor: true,
+    host_supported: true,
+}
+
+cc_library_static {
+    name: "mesa_util_c11",
+    vendor_available: true,
+    host_supported: true,
+}
+
+cc_library_static {
+    name: "mesa_platform_virtgpu",
+    vendor: true,
+    host_supported: true,
+}
+
+cc_library_static {
+    name: "mesa_goldfish_address_space",
+    vendor: true,
+    host_supported: true,
+}
+
+cc_library_static {
+    name: "mesa_gfxstream_aemu",
+    vendor: true,
+    host_supported: true,
+}
+
+cc_library_headers {
+    name: "mesa_gfxstream_aemu_headers",
+    vendor: true,
+    host_supported: true,
+}
+
+cc_library_static {
+    name: "mesa_gfxstream_connection_manager",
+    vendor: true,
+    host_supported: true,
+}
+
+cc_library_static {
+    name: "mesa_gfxstream_guest_android",
+    vendor: true,
+    host_supported: true,
+}
+
+cc_library_headers {
+    name: "mesa_gfxstream_guest_android_headers",
+    vendor: true,
+}
+
+cc_library_headers {
+    name: "mesa_gfxstream_guest_iostream",
+    vendor: true,
+    host_supported: true,
+}
+
+cc_library_shared {
+    name: "vulkan.ranchu",
+    vendor: true,
+    host_supported: true,
+}
